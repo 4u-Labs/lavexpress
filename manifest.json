@@ -1,0 +1,20 @@
+{
+    "name": "LavExpress",
+    "short_name": "LavExpress",
+    "description": "LavExpress - Sistema de gestão para lavanderia - PDV, pedidos, dashboard e clientes",
+    "start_url": "./index.php",
+    "scope": "./",
+    "id": "/i9/",
+    "display": "standalone",
+    "background_color": "#1a1b2e",
+    "theme_color": "#667eea",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🧺</text></svg>",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}
