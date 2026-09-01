@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - LavExpress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0f1525;
+            --bg-tertiary: #141b2d;
+            --glass-bg: rgba(20, 27, 45, 0.7);
+            --glass-border: rgba(139, 92, 246, 0.15);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #a78bfa;
+            --accent-tertiary: #c4b5fd;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d1224 50%, #10162a 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 73px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 73px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            overflow-y: auto;
+            padding: 1.5rem 0;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+            color: var(--accent-secondary);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 280px;
+            padding: 100px 2rem 2rem 2rem;
+            min-height: 100vh;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Glass Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title .icon {
+            color: var(--accent-secondary);
+        }
+
+        /* Accordion */
+        .accordion {
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            background: rgba(15, 21, 37, 0.5);
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .accordion-header .title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-header .icon {
+            color: var(--accent-secondary);
+            font-size: 1.25rem;
+        }
+
+        .accordion-arrow {
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .accordion.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion.open .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-body {
+            padding: 0 1.25rem 1.25rem 1.25rem;
+            color: var(--text-secondary);
+        }
+
+        /* Lists */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: step;
+        }
+
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .step-list li:last-child {
+            border-bottom: none;
+        }
+
+        .step-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-tertiary);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(139, 92, 246, 0.15);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--accent-secondary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        th {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        /* Alerts */
+        .alert {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .alert-info .alert-icon,
+        .alert-info .alert-title {
+            color: var(--info);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .alert-warning .alert-icon,
+        .alert-warning .alert-title {
+            color: var(--warning);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .alert-success .alert-icon,
+        .alert-success .alert-title {
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-error .alert-icon,
+        .alert-error .alert-title {
+            color: var(--error);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+            border-color: var(--accent-primary);
+            color: var(--accent-secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Workflow Diagram */
+        .workflow {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .workflow-status {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .workflow-status.blue {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .workflow-status.yellow {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .workflow-status.green {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .workflow-status.gray {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid rgba(100, 116, 139, 0.4);
+        }
+
+        .workflow-status.red {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .workflow-arrow {
+            width: 40px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .workflow-info {
+            flex: 1;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .workflow-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem auto;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* Stats */
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Key shortcuts */
+        kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.75rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            box-shadow: 0 2px 0 var(--glass-border);
+        }
+
+        /* Search */
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Message Preview */
+        .message-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-line;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--success);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+
+            .main {
+                padding: 90px 1rem 1rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+            }
+
+            .tab-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Backdrop for mobile */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+
+        .sidebar-backdrop.open {
+            display: block;
+        }
+
+        /* Progress indicator */
+        .progress-bar {
+            position: fixed;
+            top: 73px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--bg-tertiary);
+            z-index: 99;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-tertiary));
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">🧺</div>
+                <span class="logo-text">LavExpress</span>
+            </a>
+            <div class="search-box" style="display: none;">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar no tutorial...">
+            </div>
+            <button class="nav-toggle" onclick="toggleSidebar()">☰</button>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-section">
+            <div class="nav-section-title">Introdução</div>
+            <a href="#intro" class="nav-link active">
+                <span class="nav-icon">📖</span>
+                <span>Introdução</span>
+            </a>
+            <a href="#requisitos" class="nav-link">
+                <span class="nav-icon">⚙️</span>
+                <span>Requisitos e Instalação</span>
+            </a>
+            <a href="#primeiro-acesso" class="nav-link">
+                <span class="nav-icon">🔑</span>
+                <span>Primeiro Acesso</span>
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Módulos</div>
+            <a href="#interface" class="nav-link">
+                <span class="nav-icon">🖥️</span>
+                <span>Visão da Interface</span>
+            </a>
+            <a href="#pdv" class="nav-link">
+                <span class="nav-icon">🧾</span>
+                <span>Módulo PDV</span>
+            </a>
+            <a href="#pedidos" class="nav-link">
+                <span class="nav-icon">📦</span>
+                <span>Módulo Pedidos</span>
+            </a>
+            <a href="#dashboard" class="nav-link">
+                <span class="nav-icon">📊</span>
+                <span>Módulo Dashboard</span>
+            </a>
+            <a href="#config" class="nav-link">
+                <span class="nav-icon">⚙️</span>
+                <span>Configurações</span>
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Avançado</div>
+            <a href="#avancado" class="nav-link">
+                <span class="nav-icon">🚀</span>
+                <span>Funcionalidades Avançadas</span>
+            </a>
+            <a href="#faq" class="nav-link">
+                <span class="nav-icon">❓</span>
+                <span>Perguntas Frequentes</span>
+            </a>
+            <a href="#problemas" class="nav-link">
+                <span class="nav-icon">🔧</span>
+                <span>Solução de Problemas</span>
+            </a>
+            <a href="#dicas" class="nav-link">
+                <span class="nav-icon">💡</span>
+                <span>Dicas e Boas Práticas</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="content">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-icon">🧺</div>
+                <h1 class="hero-title">Tutorial Completo</h1>
+                <p class="hero-subtitle">Guia completo para dominar o LavExpress e otimizar a gestão do seu negócio.</p>
+                <div class="hero-badges">
+                    <span class="badge badge-primary">📖 Versão 1.0</span>
+                    <span class="badge badge-success">✓ Atualizado 02/2026</span>
+                    <span class="badge badge-warning">⏱️ ~30 min leitura</span>
+                </div>
+            </div>
+
+            <!-- Seção 1: Introdução -->
+            <section class="section" id="intro">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">1</span>
+                        Introdução ao Sistema
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        O LavExpress é uma solução completa para gerenciamento de lavanderias,
+                        desenvolvida com tecnologias web modernas (HTML5, CSS3, JavaScript e PHP).
+                    </p>
+
+                    <h4 class="card-title"><span class="icon">✨</span> Principais Funcionalidades</h4>
+
+                    <div class="grid grid-2" style="gap: 1.5rem;">
+                        <ul class="feature-list">
+                            <li>PDV (Ponto de Venda) intuitivo</li>
+                            <li>Cadastro de clientes automático</li>
+                            <li>Gerenciamento de serviços e categorias</li>
+                            <li>Controle de pedidos em tempo real</li>
+                            <li>Dashboard com estatísticas e gráficos</li>
+                            <li>Integração com WhatsApp</li>
+                        </ul>
+                        <ul class="feature-list">
+                            <li>Sistema de impressão de comprovantes</li>
+                            <li>Controle de status dos pedidos</li>
+                            <li>Cálculo automático de descontos</li>
+                            <li>Gestão de adiantamentos e saldos</li>
+                            <li>Backup e restauração de dados</li>
+                            <li>Interface responsiva</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 2: Requisitos e Instalação -->
+            <section class="section" id="requisitos">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">2</span>
+                        Requisitos e Instalação
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">💻</span> Requisitos do Servidor</h4>
+                    <ul class="feature-list">
+                        <li>PHP 7.4 ou superior</li>
+                        <li>Extensão SQLite3 habilitada no PHP</li>
+                        <li>Servidor web (Apache, Nginx, ou servidor embutido do PHP)</li>
+                        <li>Permissão de escrita no diretório da aplicação</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">🌐</span> Navegadores Compatíveis</h4>
+                    <div class="grid grid-4" style="margin-top: 1rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon">🟢</div>
+                            <div class="stat-label">Chrome</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🟢</div>
+                            <div class="stat-label">Edge</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🟢</div>
+                            <div class="stat-label">Firefox</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🟢</div>
+                            <div class="stat-label">Safari</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opções de Instalação -->
+                <div class="tabs" id="installTabs">
+                    <button class="tab-btn active" onclick="showTab('install', 'embutido')">📦 Servidor
+                        Embutido</button>
+                    <button class="tab-btn" onclick="showTab('install', 'xampp')">🔧 XAMPP/WAMP</button>
+                    <button class="tab-btn" onclick="showTab('install', 'web')">🌍 Hospedagem Web</button>
+                </div>
+
+                <div id="install-embutido" class="tab-content active">
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">📦</span> Opção 1 - Servidor Embutido do PHP (Mais
+                            Fácil)</h4>
+                        <ol class="step-list">
+                            <li>
+                                <div>
+                                    <strong>Coloque todos os arquivos do sistema em uma pasta:</strong>
+                                    <div class="code-block">index.php, script.js, style.css, sistema.php</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Abra o terminal/prompt de comando na pasta do sistema</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Execute o comando:</strong>
+                                    <div class="code-block">php -S localhost:8000</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Acesse no navegador:</strong>
+                                    <div class="code-block">http://localhost:8000</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div id="install-xampp" class="tab-content">
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">🔧</span> Opção 2 - XAMPP/WAMP</h4>
+                        <ol class="step-list">
+                            <li>
+                                <div>
+                                    <strong>Copie a pasta do sistema para:</strong>
+                                    <div class="code-block">C:\xampp\htdocs\lavanderia
+                                        ou C:\wamp64\www\lavanderia</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Inicie o Apache no painel do XAMPP/WAMP</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Acesse no navegador:</strong>
+                                    <div class="code-block">http://localhost/lavanderia</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div id="install-web" class="tab-content">
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">🌍</span> Opção 3 - Hospedagem Web</h4>
+                        <ol class="step-list">
+                            <li>
+                                <div>
+                                    <strong>Faça upload de todos os arquivos via FTP para seu servidor</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Certifique-se que a pasta tem permissão de escrita:</strong>
+                                    <div class="code-block">chmod 755 ou 777</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>Acesse pelo domínio:</strong>
+                                    <div class="code-block">http://seusite.com.br/lavanderia</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">🎉</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Verificação da Instalação</div>
+                        <p>Após instalação, o sistema criará automaticamente: <code>lavanderia.db</code> (banco de
+                            dados) e <code>uploads/icons/</code> (pasta para ícones). Se aparecer a tela de login, a
+                            instalação foi bem-sucedida!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 3: Primeiro Acesso -->
+            <section class="section" id="primeiro-acesso">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">3</span>
+                        Primeiro Acesso
+                    </h2>
+                </div>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">🔑</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Senhas Padrão Iniciais</div>
+                        <p><strong>Senha de acesso:</strong> <code>1234</code><br>
+                            <strong>Senha de configurações:</strong> <code>1234</code>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="accordion open" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">1️⃣</span> Passo 1 - Primeiro Login</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol class="step-list">
+                                <li>Acesse o sistema pelo navegador</li>
+                                <li>Você verá a tela de login com o aviso da senha padrão</li>
+                                <li>Digite: <code>1234</code></li>
+                                <li>Clique em "Entrar"</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">2️⃣</span> Passo 2 - Alterar Senhas (Recomendado)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol class="step-list">
+                                <li>Clique na aba "⚙️ Configurações"</li>
+                                <li>Digite a senha de configurações: <code>1234</code></li>
+                                <li>Role até "🔐 Segurança"</li>
+                                <li>Altere a "Senha de Login" (para acessar o sistema)</li>
+                                <li>Altere a "Senha de Configurações" (para proteger configurações)</li>
+                                <li>Clique em "💾 Salvar Configurações"</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">3️⃣</span> Passo 3 - Configurar Dados da Empresa</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol class="step-list">
+                                <li>
+                                    <div>
+                                        <strong>Ainda em Configurações, preencha:</strong>
+                                        <ul class="feature-list" style="margin-top: 0.5rem;">
+                                            <li>Nome da Empresa</li>
+                                            <li>CNPJ (opcional)</li>
+                                            <li>WhatsApp da empresa (com DDD)</li>
+                                            <li>Chave PIX (para recebimentos)</li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>Clique em "💾 Salvar Configurações"</li>
+                            </ol>
+                            <div class="alert alert-success" style="margin-top: 1rem;">
+                                <span class="alert-icon">✅</span>
+                                <div class="alert-content">
+                                    <div class="alert-title">Pronto!</div>
+                                    <p>Agora seu sistema está pronto para uso!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 4: Visão Geral da Interface -->
+            <section class="section" id="interface">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">4</span>
+                        Visão Geral da Interface
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        O sistema é dividido em 4 abas principais:
+                    </p>
+
+                    <div class="grid grid-4">
+                        <div class="stat-card" style="border-top: 3px solid var(--accent-primary);">
+                            <div class="stat-icon">🧾</div>
+                            <div class="stat-value" style="font-size: 1rem;">PDV</div>
+                            <div class="stat-label">Ponto de Venda</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--info);">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-value" style="font-size: 1rem;">Pedidos</div>
+                            <div class="stat-label">Gerenciamento</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--success);">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value" style="font-size: 1rem;">Dashboard</div>
+                            <div class="stat-label">Estatísticas</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--warning);">
+                            <div class="stat-icon">⚙️</div>
+                            <div class="stat-value" style="font-size: 1rem;">Config</div>
+                            <div class="stat-label">Configurações</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion open" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">🧾</span> Aba PDV (Ponto de Venda)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p>Onde você cria novos pedidos, adiciona serviços e registra vendas.</p>
+                            <h5 style="margin: 1rem 0 0.5rem; color: var(--text-primary);">Seções:</h5>
+                            <ul class="feature-list">
+                                <li><strong>Cliente:</strong> Cadastro/busca de clientes</li>
+                                <li><strong>Serviços:</strong> Grid com todas as categorias</li>
+                                <li><strong>Carrinho:</strong> Itens do pedido atual</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📦</span> Aba Pedidos</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p>Gerenciamento de todos os pedidos cadastrados.</p>
+                            <h5 style="margin: 1rem 0 0.5rem; color: var(--text-primary);">Funcionalidades:</h5>
+                            <ul class="feature-list">
+                                <li>Visualizar lista de pedidos</li>
+                                <li>Filtrar por status</li>
+                                <li>Filtrar por período</li>
+                                <li>Buscar por cliente</li>
+                                <li>Atualizar status</li>
+                                <li>Imprimir comprovantes</li>
+                                <li>Enviar via WhatsApp</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📊</span> Aba Dashboard</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p>Visualização de estatísticas e métricas do negócio.</p>
+                            <h5 style="margin: 1rem 0 0.5rem; color: var(--text-primary);">Informações:</h5>
+                            <ul class="feature-list">
+                                <li>Resumo financeiro (hoje, semana, mês)</li>
+                                <li>Gráfico de vendas por período</li>
+                                <li>Top serviços mais vendidos</li>
+                                <li>Distribuição de pedidos por status</li>
+                                <li>Evolução diária de vendas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">⚙️</span> Aba Configurações</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p>Personalização e gerenciamento do sistema.</p>
+                            <h5 style="margin: 1rem 0 0.5rem; color: var(--text-primary);">Seções:</h5>
+                            <ul class="feature-list">
+                                <li>Dados da Empresa</li>
+                                <li>Gerenciamento de Categorias/Serviços</li>
+                                <li>Segurança (senhas)</li>
+                                <li>Backup e Restauração</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 5: Módulo PDV -->
+            <section class="section" id="pdv">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">5</span>
+                        Módulo PDV (Ponto de Venda)
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        O PDV é onde você registra novos pedidos. Fluxo de trabalho:
+                    </p>
+
+                    <div class="grid grid-4" style="text-align: center;">
+                        <div style="padding: 1rem;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">👤</div>
+                            <div style="font-weight: 600; color: var(--accent-secondary);">1. Cliente</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Cadastrar/Selecionar</div>
+                        </div>
+                        <div style="padding: 1rem;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛒</div>
+                            <div style="font-weight: 600; color: var(--accent-secondary);">2. Serviços</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Adicionar ao Carrinho</div>
+                        </div>
+                        <div style="padding: 1rem;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📅</div>
+                            <div style="font-weight: 600; color: var(--accent-secondary);">3. Configurar</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Datas e Valores</div>
+                        </div>
+                        <div style="padding: 1rem;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                            <div style="font-weight: 600; color: var(--accent-secondary);">4. Finalizar</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Concluir Pedido</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion open" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">👤</span> Etapa 1: Cliente</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h5 style="color: var(--text-primary); margin-bottom: 0.5rem;">Novo Cliente:</h5>
+                            <ul class="feature-list">
+                                <li>Digite o nome no campo "Nome"</li>
+                                <li>Digite o telefone no formato (00) 00000-0000</li>
+                                <li>O cliente será cadastrado automaticamente</li>
+                            </ul>
+
+                            <h5 style="color: var(--text-primary); margin: 1rem 0 0.5rem;">Cliente Existente:</h5>
+                            <ul class="feature-list">
+                                <li>Digite as primeiras letras do nome</li>
+                                <li>Aparecerá uma lista de sugestões</li>
+                                <li>Clique no nome do cliente desejado</li>
+                                <li>Telefone será preenchido automaticamente</li>
+                            </ul>
+
+                            <div class="alert alert-info" style="margin-top: 1rem;">
+                                <span class="alert-icon">💡</span>
+                                <div class="alert-content">
+                                    <div class="alert-title">Dica</div>
+                                    <p>Use sempre o mesmo formato de nome (ex: "João Silva" ao invés de "JOÃO" ou "joao
+                                        silva")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">🛒</span> Etapa 2: Adicionar Serviços</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h5 style="color: var(--text-primary); margin-bottom: 0.5rem;">Selecionar Categoria:</h5>
+                            <ul class="feature-list">
+                                <li>Clique na categoria desejada (ex: 👔 Roupas)</li>
+                                <li>Os subserviços aparecerão abaixo</li>
+                            </ul>
+
+                            <h5 style="color: var(--text-primary); margin: 1rem 0 0.5rem;">Adicionar Subserviço:</h5>
+                            <ul class="feature-list">
+                                <li>Clique no subserviço (ex: Camisa Social - R$ 8,00)</li>
+                                <li>Aparecerá um modal de quantidade</li>
+                                <li>Digite a quantidade</li>
+                                <li>Clique em "Adicionar"</li>
+                            </ul>
+
+                            <div class="alert alert-success" style="margin-top: 1rem;">
+                                <span class="alert-icon">📝</span>
+                                <div class="alert-content">
+                                    <div class="alert-title">Exemplo Prático</div>
+                                    <p>Cliente trouxe: 3 camisas, 2 calças e 1 vestido</p>
+                                    <ol style="margin-top: 0.5rem; padding-left: 1.5rem; color: var(--text-secondary);">
+                                        <li>Clique em "👔 Roupas"</li>
+                                        <li>Clique em "Camisa Social" → Digite "3" → Adicionar</li>
+                                        <li>Clique em "Calça Social" → Digite "2" → Adicionar</li>
+                                        <li>Clique em "👗 Vestidos" → Digite "1" → Adicionar</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📅</span> Etapa 3: Configurar Pedido</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>📅 Data do Pedido</strong></td>
+                                            <td>Preenchida automaticamente (hoje)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>📅 Previsão Entrega</strong></td>
+                                            <td>Sistema sugere 3 dias úteis (pula domingos/feriados)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>💰 Desconto</strong></td>
+                                            <td>Tipo R$ (valor fixo) ou % (porcentagem)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>💵 Adiantamento</strong></td>
+                                            <td>Valor recebido antecipadamente</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>📝 Observações</strong></td>
+                                            <td>Anotações especiais sobre o pedido</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">✅</span> Etapa 4: Finalizar Pedido</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol class="step-list">
+                                <li>
+                                    <div>
+                                        <strong>Revisar:</strong> Confira todos os itens, verifique o total e confirme
+                                        as datas
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Finalizar:</strong> Clique em "🎯 Finalizar Pedido", revise e confirme
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Após Finalização:</strong> Modal de sucesso com opções:
+                                        <div class="grid grid-3" style="margin-top: 0.75rem; gap: 0.5rem;">
+                                            <div class="stat-card">
+                                                <div class="stat-icon">📱</div>
+                                                <div class="stat-label">Enviar WhatsApp</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-icon">🖨️</div>
+                                                <div class="stat-label">Imprimir</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-icon">✅</div>
+                                                <div class="stat-label">Fechar</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 6: Módulo Pedidos -->
+            <section class="section" id="pedidos">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">6</span>
+                        Módulo Pedidos
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">🔍</span> Filtros Disponíveis</h4>
+
+                    <div class="grid grid-3" style="gap: 1rem; margin-top: 1rem;">
+                        <div>
+                            <h5 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">📋 Por Status</h5>
+                            <ul style="list-style: none; color: var(--text-secondary); font-size: 0.9rem;">
+                                <li>• Todos</li>
+                                <li>• Aguardando</li>
+                                <li>• Em Processamento</li>
+                                <li>• Pronto</li>
+                                <li>• Entregue</li>
+                                <li>• Cancelado</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">📅 Por Período</h5>
+                            <ul style="list-style: none; color: var(--text-secondary); font-size: 0.9rem;">
+                                <li>• Todos</li>
+                                <li>• Hoje</li>
+                                <li>• Esta Semana</li>
+                                <li>• Este Mês</li>
+                                <li>• Personalizado</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">🔍 Busca</h5>
+                            <ul style="list-style: none; color: var(--text-secondary); font-size: 0.9rem;">
+                                <li>• Por nome do cliente</li>
+                                <li>• Filtra em tempo real</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">🔄</span> Fluxo de Status dos Pedidos</h4>
+
+                    <div class="workflow">
+                        <div class="workflow-step">
+                            <div class="workflow-status blue">🔵</div>
+                            <div class="workflow-info">
+                                <div class="workflow-title">Aguardando</div>
+                                <div class="workflow-desc">Cliente deixou as roupas</div>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-arrow">↓</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-status yellow">🟡</div>
+                            <div class="workflow-info">
+                                <div class="workflow-title">Em Processamento</div>
+                                <div class="workflow-desc">Roupas sendo lavadas</div>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-arrow">↓</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-status green">🟢</div>
+                            <div class="workflow-info">
+                                <div class="workflow-title">Pronto</div>
+                                <div class="workflow-desc">Prontas para retirada</div>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-arrow">↓</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-status gray">✅</div>
+                            <div class="workflow-info">
+                                <div class="workflow-title">Entregue</div>
+                                <div class="workflow-desc">Pedido finalizado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step"
+                        style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--glass-border);">
+                        <div class="workflow-status red">🔴</div>
+                        <div class="workflow-info">
+                            <div class="workflow-title">Cancelado</div>
+                            <div class="workflow-desc">Cliente desistiu - pedido não processado</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">📱</span> Exemplo de Mensagem WhatsApp</h4>
+
+                    <div class="message-preview">━━━━━━━━━━━━━━━━━━━━━━━━
+                        🧺 <strong>LAVANDERIA EXEMPLO</strong>
+                        ━━━━━━━━━━━━━━━━━━━━━━━━
+
+                        📋 <strong>COMPROVANTE DE PEDIDO</strong>
+
+                        <strong>Pedido:</strong> #001
+                        <strong>Cliente:</strong> João Silva
+                        <strong>Data:</strong> 05/02/2026
+                        <strong>Previsão:</strong> 08/02/2026
+
+                        🛒 <strong>ITENS:</strong>
+                        • 3x Camisa - R$ 24,00
+                        • 2x Calça - R$ 24,00
+                        • 1x Vestido - R$ 25,00
+
+                        💰 <strong>VALORES:</strong>
+                        Subtotal: R$ 73,00
+                        Desconto: R$ 3,00
+                        <strong>Total: R$ 70,00</strong>
+
+                        Adiantamento: R$ 20,00
+                        <strong>Saldo: R$ 50,00</strong>
+
+                        ━━━━━━━━━━━━━━━━━━━━━━━━
+                        Obrigado pela preferência! 😊
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 7: Dashboard -->
+            <section class="section" id="dashboard">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">7</span>
+                        Módulo Dashboard
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">💰</span> Resumo Financeiro</h4>
+
+                    <div class="grid grid-3" style="margin-top: 1rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">R$ 150,00</div>
+                            <div class="stat-label">Hoje (5 pedidos)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-value">R$ 890,00</div>
+                            <div class="stat-label">Esta Semana (28 pedidos)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">R$ 3.240,00</div>
+                            <div class="stat-label">Este Mês (97 pedidos)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">📈</span> Gráfico de Vendas</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Visualize a evolução das suas vendas com filtros de período:
+                        </p>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                            <span class="badge badge-primary">7 dias</span>
+                            <span class="badge badge-primary">15 dias</span>
+                            <span class="badge badge-primary">30 dias</span>
+                            <span class="badge badge-primary">60 dias</span>
+                            <span class="badge badge-primary">90 dias</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">🏆</span> Top Serviços</h4>
+                        <div class="table-wrapper" style="margin-top: 0.5rem;">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>1°</td>
+                                        <td>Camisa Social</td>
+                                        <td>145</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2°</td>
+                                        <td>Calça Jeans</td>
+                                        <td>98</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3°</td>
+                                        <td>Vestido Curto</td>
+                                        <td>67</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 8: Configurações -->
+            <section class="section" id="config">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">8</span>
+                        Módulo Configurações
+                    </h2>
+                </div>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">🔒</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Acesso Protegido</div>
+                        <p>Para acessar Configurações, você precisa digitar a senha de configurações (padrão:
+                            <code>1234</code>)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="accordion open" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">🏢</span> Seção 1: Dados da Empresa</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Nome</strong></td>
+                                            <td>Aparece no topo do sistema e nos comprovantes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>CNPJ</strong></td>
+                                            <td>Opcional, aparece nos comprovantes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>WhatsApp</strong></td>
+                                            <td>Usado para envio automático de mensagens</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>PIX</strong></td>
+                                            <td>Informação enviada aos clientes para pagamento</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📦</span> Seção 2: Gerenciar Categorias</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Esta é a seção mais
+                                importante! Configure todos os serviços oferecidos.</p>
+
+                            <h5 style="color: var(--text-primary); margin-bottom: 0.75rem;">Exemplo de Estrutura:</h5>
+
+                            <div class="code-block" style="line-height: 1.8;">👔 ROUPAS
+                                ├─ Camisa Social - R$ 8,00
+                                ├─ Calça Jeans - R$ 10,00
+                                └─ Bermuda - R$ 7,00
+
+                                👗 VESTIDOS
+                                ├─ Vestido Curto - R$ 20,00
+                                └─ Vestido Longo - R$ 30,00
+
+                                🛏️ CAMA E BANHO
+                                ├─ Lençol Solteiro - R$ 15,00
+                                ├─ Edredom Casal - R$ 50,00
+                                └─ Toalha de Banho - R$ 8,00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">🔐</span> Seção 3: Segurança</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="grid grid-2" style="gap: 1rem;">
+                                <div class="stat-card">
+                                    <div class="stat-icon">🔑</div>
+                                    <div class="stat-value" style="font-size: 1rem;">Senha de Login</div>
+                                    <div class="stat-label">Para acessar o sistema</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">⚙️</div>
+                                    <div class="stat-value" style="font-size: 1rem;">Senha de Config</div>
+                                    <div class="stat-label">Para acessar configurações</div>
+                                </div>
+                            </div>
+
+                            <h5 style="color: var(--text-primary); margin: 1.5rem 0 0.75rem;">Dicas de Segurança:</h5>
+                            <ul class="feature-list">
+                                <li>Use senhas diferentes</li>
+                                <li>Troque regularmente (a cada 3 meses)</li>
+                                <li>Não compartilhe as senhas</li>
+                                <li>Use combinação de números (mínimo 4 dígitos)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">💾</span> Seção 4: Backup e Restauração</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="grid grid-2" style="gap: 1rem;">
+                                <div>
+                                    <h5 style="color: var(--success); margin-bottom: 0.75rem;">📥 Fazer Backup</h5>
+                                    <ol class="step-list" style="font-size: 0.9rem;">
+                                        <li>Clique em "📥 Baixar Backup"</li>
+                                        <li>Arquivo <code>lavanderia.db</code> será baixado</li>
+                                        <li>Salve em local seguro (Google Drive, Dropbox, etc.)</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <h5 style="color: var(--warning); margin-bottom: 0.75rem;">📤 Restaurar Backup</h5>
+                                    <ol class="step-list" style="font-size: 0.9rem;">
+                                        <li>Clique em "Escolher arquivo"</li>
+                                        <li>Selecione o arquivo <code>lavanderia.db</code></li>
+                                        <li>Clique em "📤 Restaurar Backup"</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-error" style="margin-top: 1.5rem;">
+                                <span class="alert-icon">⚠️</span>
+                                <div class="alert-content">
+                                    <div class="alert-title">Atenção</div>
+                                    <p>Restaurar um backup substitui TODOS os dados atuais. Faça backup dos dados atuais
+                                        antes de restaurar!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 9: Funcionalidades Avançadas -->
+            <section class="section" id="avancado">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">9</span>
+                        Funcionalidades Avançadas
+                    </h2>
+                </div>
+
+                <div class="accordion open" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📱</span> Integração com WhatsApp</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h5 style="color: var(--text-primary); margin-bottom: 0.75rem;">Configuração:</h5>
+                            <ol class="step-list" style="font-size: 0.9rem;">
+                                <li>Vá em Configurações</li>
+                                <li>Preencha o campo "WhatsApp" com formato: (00) 00000-0000</li>
+                                <li>Salve as configurações</li>
+                            </ol>
+
+                            <h5 style="color: var(--text-primary); margin: 1.5rem 0 0.75rem;">Funcionalidades:</h5>
+                            <div class="grid grid-2" style="gap: 1rem;">
+                                <div class="stat-card">
+                                    <div class="stat-icon">📱</div>
+                                    <div class="stat-value" style="font-size: 1rem;">Enviar Comprovante</div>
+                                    <div class="stat-label">Mensagem automática com todos os detalhes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">💬</div>
+                                    <div class="stat-value" style="font-size: 1rem;">Abrir Chat</div>
+                                    <div class="stat-label">Conversa direta com o cliente</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">📅</span> Datas Inteligentes</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">O sistema calcula
+                                automaticamente datas de entrega:</p>
+
+                            <ul class="feature-list">
+                                <li>Pula domingos automaticamente</li>
+                                <li>Pula feriados nacionais</li>
+                                <li>Considera apenas dias úteis</li>
+                                <li>Padrão: 3 dias úteis</li>
+                            </ul>
+
+                            <h5 style="color: var(--text-primary); margin: 1rem 0 0.75rem;">Feriados Reconhecidos:</h5>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <span class="badge badge-primary">Ano Novo</span>
+                                <span class="badge badge-primary">Tiradentes</span>
+                                <span class="badge badge-primary">Trabalho</span>
+                                <span class="badge badge-primary">Independência</span>
+                                <span class="badge badge-primary">Aparecida</span>
+                                <span class="badge badge-primary">Finados</span>
+                                <span class="badge badge-primary">República</span>
+                                <span class="badge badge-primary">Natal</span>
+                                <span class="badge badge-primary">Carnaval</span>
+                                <span class="badge badge-primary">Sexta-Santa</span>
+                                <span class="badge badge-primary">Corpus Christi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon">💰</span> Descontos e Adiantamentos</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="grid grid-2" style="gap: 1.5rem;">
+                                <div>
+                                    <h5 style="color: var(--accent-secondary); margin-bottom: 0.75rem;">Tipos de
+                                        Desconto</h5>
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>R$</strong></td>
+                                                    <td>Desconto fixo em reais</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>%</strong></td>
+                                                    <td>Desconto percentual sobre o total</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 style="color: var(--accent-secondary); margin-bottom: 0.75rem;">Cálculo de Saldo
+                                    </h5>
+                                    <div class="code-block">Saldo = Total - Adiantamento
+
+                                        Exemplo:
+                                        Total: R$ 100,00
+                                        Adiantamento: R$ 30,00
+                                        Saldo: R$ 70,00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 10: FAQ -->
+            <section class="section" id="faq">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">10</span>
+                        Perguntas Frequentes
+                    </h2>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ Como altero o nome da minha lavanderia?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            Vá em <strong>Configurações</strong> → <strong>Dados da Empresa</strong> → Altere "Nome da
+                            Empresa" → <strong>Salvar</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ Posso usar o sistema no celular?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <strong>Sim!</strong> O sistema é 100% responsivo. Acesse pelo navegador do celular.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ Esqueci minha senha, e agora?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="alert alert-error">
+                                <span class="alert-icon">⚠️</span>
+                                <div class="alert-content">
+                                    <div class="alert-title">Procedimento de Reset</div>
+                                    <ol style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                                        <li>Faça backup de <code>lavanderia.db</code> (se quiser dados)</li>
+                                        <li>Delete o arquivo <code>lavanderia.db</code></li>
+                                        <li>Recarregue a página</li>
+                                        <li>Sistema criará novo banco (senha: <code>1234</code>)</li>
+                                    </ol>
+                                    <p style="margin-top: 0.5rem; color: var(--error);"><strong>ATENÇÃO: Você perderá
+                                            todos os dados!</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ O sistema funciona sem internet?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <strong>Sim!</strong> O sistema é 100% offline (local). A internet só é necessária para:
+                            <ul class="feature-list" style="margin-top: 0.5rem;">
+                                <li>Enviar mensagens WhatsApp</li>
+                                <li>Acessar se estiver em servidor web</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ Tem limite de pedidos/clientes?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <strong>Não!</strong> O sistema não tem limites artificiais. O único limite é o espaço
+                            disponível em disco.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title">❓ Posso ter mais de um usuário?</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            Atualmente o sistema suporta apenas um usuário/senha. Para múltiplos acessos, você pode
+                            abrir o sistema em abas/navegadores diferentes.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 11: Solução de Problemas -->
+            <section class="section" id="problemas">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">11</span>
+                        Solução de Problemas
+                    </h2>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon" style="color: var(--error);">🔴</span> Sistema não abre /
+                            Tela branca</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h5 style="color: var(--text-primary); margin-bottom: 0.75rem;">Possíveis Causas e Soluções:
+                            </h5>
+                            <ol class="step-list">
+                                <li><strong>PHP não instalado:</strong> Instale PHP 7.4 ou superior e ative extensão
+                                    SQLite3</li>
+                                <li><strong>Servidor não iniciado:</strong> Se usando servidor embutido:
+                                    <code>php -S localhost:8000</code>
+                                </li>
+                                <li><strong>Permissões de arquivo:</strong> No Linux:
+                                    <code>chmod 755 pasta_sistema</code>
+                                </li>
+                                <li><strong>Erro no JavaScript:</strong> Abra Console do navegador (<kbd>F12</kbd>) e
+                                    verifique erros</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon" style="color: var(--error);">🔴</span> Dados não
+                            salvam</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol class="step-list">
+                                <li><strong>Permissão de escrita:</strong> Sistema precisa poder escrever
+                                    <code>lavanderia.db</code>
+                                </li>
+                                <li><strong>Banco corrompido:</strong> Restaure um backup ou delete e recrie</li>
+                                <li><strong>Erro de rede:</strong> Verifique console do navegador (<kbd>F12</kbd>)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon" style="color: var(--warning);">🟡</span> WhatsApp não
+                            abre</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ul class="feature-list">
+                                <li>Número configurado em Configurações? Formato: (34) 99999-9999</li>
+                                <li>Telefone do cliente correto? Deve ter DDD</li>
+                                <li>WhatsApp Web funcionando? Acesse web.whatsapp.com</li>
+                                <li>Bloqueador de pop-up? Desabilite para o site</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion" onclick="toggleAccordion(this)">
+                    <button class="accordion-header">
+                        <span class="title"><span class="icon" style="color: var(--warning);">🟡</span> Sistema
+                            lento</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ul class="feature-list">
+                                <li>Muitos pedidos antigos? Faça backup e delete pedidos antigos</li>
+                                <li>Servidor sobrecarregado? Feche programas desnecessários</li>
+                                <li>Muitas abas abertas? Feche outras abas do navegador</li>
+                                <li>Computador lento? Considere upgrade de hardware</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 12: Dicas e Boas Práticas -->
+            <section class="section" id="dicas">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-number">12</span>
+                        Dicas e Boas Práticas
+                    </h2>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">📦</span> Organização de Serviços</h4>
+                        <ul class="feature-list">
+                            <li>Use categorias lógicas</li>
+                            <li>Mantenha preços atualizados</li>
+                            <li>Use emojis consistentes</li>
+                            <li>Nomes claros e objetivos</li>
+                            <li>Agrupe itens similares</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4 class="card-title"><span class="icon">🔒</span> Segurança dos Dados</h4>
+                        <ul class="feature-list">
+                            <li>Faça backup DIARIAMENTE</li>
+                            <li>Salve backups em nuvem</li>
+                            <li>Teste restauração periodicamente</li>
+                            <li>Troque senhas regularmente</li>
+                            <li>Não compartilhe senhas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 class="card-title"><span class="icon">🔄</span> Fluxo de Trabalho Ideal</h4>
+
+                    <div class="grid grid-4" style="margin-top: 1rem;">
+                        <div style="text-align: center; padding: 1rem;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem;">
+                                1</div>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Recepção
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Receber, conferir, registrar,
+                                enviar comprovante</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem;">
+                                2</div>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                Processamento</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Atualizar status, lavar, embalar
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem;">
+                                3</div>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                Notificação</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Enviar mensagem, informar saldo
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem;">
+                                4</div>
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Entrega
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Conferir, receber, finalizar</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Dica Final</div>
+                        <p>Sempre documente tudo nas observações! Tire fotos de manchas/danos antes do processamento e
+                            confirme itens na entrada E saída para evitar conflitos.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-logo">🧺</div>
+                <p><strong>LavExpress</strong></p>
+                <p>Versão 1.0 • Fevereiro 2026</p>
+                <p style="margin-top: 1rem;">Obrigado por usar o LavExpress! ✨</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // Toggle Sidebar (mobile)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarBackdrop').classList.toggle('open');
+        }
+
+        // Toggle Accordion
+        function toggleAccordion(element) {
+            element.classList.toggle('open');
+        }
+
+        // Tab Switching
+        function showTab(group, tabName) {
+            // Hide all tab contents
+            document.querySelectorAll(`[id^="${group}-"]`).forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active from all buttons
+            document.querySelectorAll(`#${group}Tabs .tab-btn`).forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`${group}-${tabName}`).classList.add('active');
+
+            // Set active button
+            event.target.classList.add('active');
+        }
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function updateActiveLink() {
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Update progress bar
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        window.addEventListener('scroll', updateActiveLink);
+
+        // Close sidebar when clicking on link (mobile)
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Initial call
+        updateActiveLink();
+    </script>
+</body>
+
+</html>
